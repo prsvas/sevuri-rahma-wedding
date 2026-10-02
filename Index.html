@@ -1,0 +1,1360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Aqdi Ceremony & Singo | Sevuri & Rahma</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Montserrat:wght@300;400;500;600&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #c5a059;
+    --gold-light: #f5e7c8;
+    --gold-rich: #d4af37;
+    --gold-dark: #8c6a2d;
+    --gold-gradient: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+    --sage-dark: #1f3326;
+    --sage-cream: #f4efe6;
+    --bg-page: #0f1411;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    background: #111613;
+    background: radial-gradient(circle at 50% 20%, #1e2b22 0%, #090d0a 100%);
+    font-family: 'Montserrat', sans-serif;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 10px 0 40px;
+    overflow-x: hidden;
+  }
+
+  /* Audio player button */
+  .audio-toggle {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 999;
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border: 1.5px solid var(--gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.35);
+    transition: transform 0.2s, background 0.3s;
+  }
+  .audio-toggle:active { transform: scale(0.9); }
+  .audio-toggle svg { width: 22px; height: 22px; fill: var(--gold-dark); }
+
+  /* Device frame container */
+  .phone-wrapper {
+    width: 100%;
+    max-width: 430px;
+    position: relative;
+    perspective: 1200px;
+  }
+
+  /* ================= 3D EMBOSSED ENVELOPE ================= */
+  .envelope-wrapper {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    max-width: 420px;
+    height: 94vh;
+    max-height: 840px;
+    z-index: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 1.1s cubic-bezier(0.4, 0, 0.2, 1), visibility 1.1s;
+  }
+
+  .envelope-wrapper.opened {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .envelope-card {
+    position: relative;
+    width: 90%;
+    height: 92%;
+    background: #faf8f5;
+    border-radius: 16px;
+    box-shadow: 0 30px 70px rgba(0,0,0,0.6), inset 0 0 80px rgba(197, 160, 89, 0.08);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e2dbcd;
+  }
+
+  /* 3D Plaster Floral Relief Stucco Pattern */
+  .embossed-relief-bg {
+    position: absolute;
+    inset: 0;
+    background-color: #faf8f5;
+    background-image: 
+      radial-gradient(circle at 50% 50%, rgba(255,255,255,0.9) 0%, rgba(235,228,217,0.4) 100%),
+      url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M60 15 C65 35 85 55 105 60 C85 65 65 85 60 105 C55 85 35 65 15 60 C35 55 55 35 60 15 Z' fill='none' stroke='%23d6cbba' stroke-width='1.2' stroke-opacity='0.45'/%3E%3Ccircle cx='60' cy='60' r='18' fill='none' stroke='%23d6cbba' stroke-width='1' stroke-opacity='0.35'/%3E%3Cpath d='M60 0 C62 10 70 18 80 20 C70 22 62 30 60 40 C58 30 50 22 40 20 C50 18 58 10 60 0 Z' fill='none' stroke='%23d6cbba' stroke-width='0.8' stroke-opacity='0.35'/%3E%3C/svg%3E");
+    opacity: 0.85;
+  }
+
+  /* Envelope Flaps */
+  .envelope-flap-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(180deg, #f7f3ea 0%, #ede5d5 100%);
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    transform-origin: top center;
+    transition: transform 1.2s cubic-bezier(0.65, 0, 0.35, 1);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.1);
+    z-index: 5;
+    border-bottom: 1px solid rgba(197, 160, 89, 0.25);
+  }
+
+  .envelope-flap-bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 55%;
+    background: linear-gradient(0deg, #ede5d5 0%, #faf7f0 100%);
+    clip-path: polygon(0 100%, 100% 100%, 50% 0);
+    z-index: 4;
+    border-top: 1px solid rgba(197, 160, 89, 0.2);
+  }
+
+  .envelope-wrapper.unfolding .envelope-flap-top {
+    transform: rotateX(175deg);
+    z-index: 1;
+  }
+
+  /* Wax Seal with Monogram */
+  .wax-seal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90px;
+    height: 90px;
+    background: radial-gradient(circle at 35% 30%, #fffef8 0%, #ede6d8 55%, #cbb998 100%);
+    border-radius: 50%;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.25), inset 0 2px 6px rgba(255,255,255,0.9), inset 0 -4px 8px rgba(140, 107, 45, 0.4);
+    z-index: 10;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: sealBreathe 2.8s infinite ease-in-out;
+  }
+  @keyframes sealBreathe {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 12px 30px rgba(0,0,0,0.25); }
+    50% { transform: translate(-50%, -50%) scale(1.06); box-shadow: 0 18px 40px rgba(197, 160, 89, 0.4); }
+  }
+
+  .wax-seal-inner {
+    width: 72px;
+    height: 72px;
+    border: 1.5px dashed var(--gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 0 12px rgba(197, 160, 89, 0.15);
+  }
+  .wax-seal-monogram {
+    font-family: 'Great Vibes', cursive;
+    font-size: 32px;
+    color: var(--gold-dark);
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 1px rgba(255,255,255,0.85);
+  }
+
+  .tap-seal-text {
+    position: absolute;
+    bottom: 15%;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+    font-weight: 600;
+    z-index: 6;
+    animation: blinkHint 2s infinite;
+  }
+  @keyframes blinkHint { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+
+  /* ================= MAIN SCROLLABLE INVITATION ================= */
+  .invitation-container {
+    width: 100%;
+    background: #fffdfa;
+    border-radius: 22px;
+    overflow: hidden;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.35);
+    border: 1px solid rgba(197, 160, 89, 0.35);
+    position: relative;
+  }
+
+  /* SECTION 1: COVER WITH MOSQUE / PALACE & COUPLE */
+  .cover-hero-screen {
+    position: relative;
+    width: 100%;
+    min-height: 580px;
+    background: linear-gradient(180deg, #1b2820 0%, #293d31 45%, #f4efe6 100%);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 30px 20px 20px;
+    text-align: center;
+  }
+
+  /* Golden Arched Gateway Border */
+  .arch-frame-svg {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    right: 15px;
+    bottom: 15px;
+    pointer-events: none;
+    z-index: 4;
+  }
+
+  /* Hanging Lanterns */
+  .hanging-lanterns {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 35px;
+    z-index: 3;
+    pointer-events: none;
+  }
+  .lantern {
+    width: 24px;
+    filter: drop-shadow(0 0 8px rgba(245, 231, 200, 0.7));
+    animation: lanternSwing 3.5s ease-in-out infinite alternate;
+    transform-origin: top center;
+  }
+  .lantern-right { animation-delay: -1.7s; }
+  @keyframes lanternSwing {
+    0% { transform: rotate(-4deg); }
+    100% { transform: rotate(4deg); }
+  }
+
+  .cover-header-text {
+    position: relative;
+    z-index: 5;
+    margin-top: 10px;
+  }
+  .cover-bismillah {
+    font-family: 'Amiri', serif;
+    font-size: 24px;
+    color: var(--gold-light);
+    margin-bottom: 6px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+  }
+  .cover-subtitle {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #e2ddd3;
+    margin-bottom: 6px;
+  }
+  .cover-title {
+    font-family: 'Cinzel', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 2px;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.5);
+  }
+  .cover-couple {
+    font-family: 'Great Vibes', cursive;
+    font-size: 40px;
+    color: var(--gold-light);
+    margin-top: 6px;
+    line-height: 1.1;
+    text-shadow: 0 3px 8px rgba(0,0,0,0.4);
+  }
+
+  /* Grand Mosque / Palace Backdrop & Couple Illustration */
+  .scenery-stage {
+    position: relative;
+    width: 100%;
+    height: 290px;
+    margin-top: auto;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 2;
+  }
+
+  .palace-scenery-svg {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .couple-illustration {
+    position: relative;
+    z-index: 3;
+    width: 185px;
+    height: auto;
+    filter: drop-shadow(0 10px 15px rgba(0,0,0,0.4));
+    margin-bottom: -4px;
+  }
+
+  .scroll-down-cta {
+    position: relative;
+    z-index: 5;
+    font-size: 10px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-weight: 600;
+  }
+  .scroll-down-cta span {
+    animation: bounceIndicator 1.6s infinite;
+    font-size: 14px;
+    margin-top: 2px;
+  }
+  @keyframes bounceIndicator { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
+
+  /* ================= SECTION 2: SCRATCH TO REVEAL DATE ================= */
+  .scratch-section {
+    padding: 35px 22px 20px;
+    text-align: center;
+    background: #fffdfa;
+  }
+  .section-heading-serif {
+    font-family: 'Cinzel', serif;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--gold-dark);
+    margin-bottom: 4px;
+  }
+  .section-subtext {
+    font-size: 11px;
+    color: #888;
+    margin-bottom: 22px;
+    letter-spacing: 1px;
+  }
+
+  .scratch-cards-row {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .scratch-card-box {
+    position: relative;
+    width: 96px;
+    height: 96px;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+    border: 1px solid #dfd8cb;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+  }
+  .scratch-inner-value {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .scratch-val-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--sage-dark);
+    line-height: 1;
+  }
+  .scratch-val-label {
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+    margin-top: 4px;
+    font-weight: 600;
+  }
+  .scratch-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    cursor: grab;
+    z-index: 2;
+    touch-action: none;
+  }
+
+  /* ================= SECTION 3: FORMAL AQDI INVITATION CARD ================= */
+  .arched-niche-invitation {
+    margin: 18px 20px;
+    padding: 35px 22px;
+    background: #ffffff;
+    border-radius: 200px 200px 16px 16px;
+    border: 1.5px solid var(--gold-rich);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.04);
+    text-align: center;
+    position: relative;
+  }
+  .niche-inner-border {
+    position: absolute;
+    inset: 6px;
+    border: 1px dashed rgba(197, 160, 89, 0.45);
+    border-radius: 194px 194px 12px 12px;
+    pointer-events: none;
+  }
+
+  .niche-sub-intro {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #666;
+    margin-top: 15px;
+  }
+  .niche-main-ceremony {
+    font-family: 'Cinzel', serif;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--sage-dark);
+    margin: 8px 0 16px;
+  }
+
+  .niche-groom {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--sage-dark);
+    line-height: 1.2;
+  }
+  .niche-parentage {
+    font-size: 10.5px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #777;
+    margin: 4px 0 10px;
+  }
+  .niche-with-sym {
+    font-family: 'Great Vibes', cursive;
+    font-size: 24px;
+    color: var(--gold-rich);
+    margin: 4px 0;
+  }
+  .niche-bride {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--sage-dark);
+    line-height: 1.2;
+  }
+
+  .niche-message {
+    font-size: 12px;
+    line-height: 1.8;
+    color: #444;
+    margin: 20px 10px 15px;
+    font-style: italic;
+  }
+
+  .quran-ayah-block {
+    margin-top: 18px;
+    padding-top: 15px;
+    border-top: 1px solid #ede7db;
+  }
+  .quran-arabic-text {
+    font-family: 'Amiri', serif;
+    font-size: 24px;
+    color: var(--sage-dark);
+    margin-bottom: 4px;
+  }
+  .quran-trans {
+    font-size: 11px;
+    color: #666;
+    font-style: italic;
+  }
+  .quran-surah-ref {
+    font-size: 9.5px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+    font-weight: 600;
+    margin-top: 4px;
+  }
+
+  /* ================= SECTION 4: SINGO EVENT CARD (USIKU WA ZAWADI) ================= */
+  .singo-event-container {
+    margin: 24px 20px;
+    padding: 26px 20px;
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #ebd7d9;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.04);
+    position: relative;
+    overflow: hidden;
+  }
+  .singo-floral-accent {
+    position: absolute;
+    top: -20px;
+    left: -20px;
+    width: 90px;
+    height: 90px;
+    opacity: 0.85;
+    pointer-events: none;
+  }
+  .singo-tag {
+    display: inline-block;
+    padding: 4px 10px;
+    background: #8b263e;
+    color: #ffffff;
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    font-weight: 700;
+    border-radius: 20px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .singo-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #8b263e;
+    margin-bottom: 4px;
+  }
+  .singo-sub-heading {
+    font-family: 'Great Vibes', cursive;
+    font-size: 26px;
+    color: #444;
+    margin-bottom: 12px;
+  }
+  .singo-swahili-text {
+    font-size: 12px;
+    line-height: 1.7;
+    color: #555;
+    margin-bottom: 16px;
+  }
+  .event-info-line {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    font-size: 12px;
+    color: #333;
+  }
+  .event-info-line svg {
+    width: 17px;
+    height: 17px;
+    fill: #8b263e;
+    flex-shrink: 0;
+  }
+  .dress-code-singo {
+    margin-top: 14px;
+    padding-top: 10px;
+    border-top: 1px dashed #ebd7d9;
+    font-size: 11px;
+    color: #444;
+  }
+
+  /* ================= SECTION 5: WEDDING TIMELINE ================= */
+  .timeline-section {
+    padding: 30px 22px;
+    background: #fffdfa;
+    text-align: center;
+  }
+  .timeline-container {
+    position: relative;
+    max-width: 340px;
+    margin: 25px auto 10px;
+    padding-left: 20px;
+  }
+  .timeline-line {
+    position: absolute;
+    top: 20px;
+    bottom: 20px;
+    left: 45px;
+    width: 1.5px;
+    background: linear-gradient(180deg, var(--gold-light), var(--gold-dark), var(--gold-light));
+  }
+
+  .timeline-step {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+    text-align: left;
+  }
+  .timeline-icon-arch {
+    width: 50px;
+    height: 60px;
+    border: 1.5px solid var(--gold-rich);
+    border-radius: 25px 25px 8px 8px;
+    background: #ffffff;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    flex-shrink: 0;
+  }
+  .timeline-icon-arch svg {
+    width: 24px;
+    height: 24px;
+    fill: var(--gold-dark);
+  }
+  .timeline-content-box {
+    margin-left: 18px;
+  }
+  .timeline-time {
+    font-family: 'Playfair Display', serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--sage-dark);
+  }
+  .timeline-desc {
+    font-size: 12px;
+    color: #666;
+    margin-top: 2px;
+  }
+
+  /* ================= SECTION 6: LIVE COUNTDOWN TIMER ================= */
+  .countdown-box-section {
+    margin: 10px 20px 25px;
+    padding: 26px 18px;
+    background: linear-gradient(135deg, #1b2820 0%, #111a14 100%);
+    border-radius: 18px;
+    text-align: center;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+    border: 1px solid rgba(197, 160, 89, 0.35);
+  }
+  .countdown-title-text {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    margin-bottom: 18px;
+  }
+  .countdown-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  .countdown-col {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(245, 231, 200, 0.2);
+    border-radius: 10px;
+    padding: 10px 2px;
+  }
+  .countdown-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #ffffff;
+    display: block;
+  }
+  .countdown-lbl {
+    font-size: 8.5px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    margin-top: 3px;
+    display: block;
+  }
+
+  /* ================= SECTION 7: VENUE SPOTLIGHT AT END ================= */
+  .venue-spotlight-section {
+    margin: 0 20px 30px;
+    padding: 22px 18px;
+    background: #ffffff;
+    border-radius: 18px;
+    border: 1px solid #e5ded2;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.04);
+    text-align: center;
+  }
+  .venue-image-frame {
+    width: 100%;
+    height: 180px;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  .venue-illustration-art {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .venue-city-title {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+    margin-bottom: 4px;
+    font-weight: 700;
+  }
+  .venue-name-serif {
+    font-family: 'Playfair Display', serif;
+    font-size: 21px;
+    font-weight: 700;
+    color: var(--sage-dark);
+    margin-bottom: 4px;
+  }
+  .venue-hall-desc {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 15px;
+  }
+
+  .dress-code-palette {
+    padding: 12px;
+    background: #fbf9f5;
+    border-radius: 10px;
+    border: 1px solid #ebd7d9;
+    border: 1px solid #ebe5d8;
+    margin-bottom: 16px;
+  }
+  .palette-title {
+    font-size: 10.5px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 8px;
+  }
+  .swatch-row {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+  }
+  .swatch-circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.15);
+  }
+
+  .btn-map-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 22px;
+    background: var(--sage-dark);
+    color: #ffffff;
+    border-radius: 25px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgba(31, 51, 38, 0.25);
+    transition: background 0.3s, transform 0.2s;
+  }
+  .btn-map-action:active { transform: scale(0.96); }
+
+  /* Footer */
+  .invitation-footer {
+    text-align: center;
+    padding: 25px 20px 35px;
+    font-size: 11.5px;
+    color: #777;
+    background: #fdfbf7;
+    border-top: 1px solid #ede8de;
+  }
+  .footer-signature {
+    font-family: 'Great Vibes', cursive;
+    font-size: 30px;
+    color: var(--sage-dark);
+    margin-bottom: 6px;
+  }
+</style>
+</head>
+<body>
+
+  <!-- Floating Audio Player -->
+  <div class="audio-toggle" id="audioBtn" title="Play / Pause Wedding Music">
+    <svg viewBox="0 0 24 24">
+      <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+    </svg>
+  </div>
+  <audio id="bgMusic" loop preload="none">
+    <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=soft-wedding-background-111756.mp3" type="audio/mp3">
+  </audio>
+
+  <div class="phone-wrapper">
+
+    <!-- 1. 3D EMBOSSED PLASTER ENVELOPE -->
+    <div class="envelope-wrapper" id="envelopeWrapper">
+      <div class="envelope-card">
+        <div class="embossed-relief-bg"></div>
+        <div class="envelope-flap-top"></div>
+        <div class="envelope-flap-bottom"></div>
+        
+        <!-- Wax Seal -->
+        <div class="wax-seal" id="waxSeal">
+          <div class="wax-seal-inner">
+            <div class="wax-seal-monogram">S&R</div>
+          </div>
+        </div>
+
+        <div class="tap-seal-text">Tap seal to open invitation</div>
+      </div>
+    </div>
+
+    <!-- 2. SCROLLABLE INVITATION WEBPAGE -->
+    <div class="invitation-container" id="mainInvitePage">
+
+      <!-- ================= SECTION 1: COVER ARCH + TAJ MAHAL / MOSQUE + COUPLE ================= -->
+      <div class="cover-hero-screen">
+        
+        <!-- Golden Arched Border Overlay -->
+        <svg class="arch-frame-svg" viewBox="0 0 400 580" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20 560 V220 C20 120 100 40 200 20 C300 40 380 120 380 220 V560" stroke="#d4af37" stroke-width="2" stroke-opacity="0.8"/>
+          <path d="M28 560 V222 C28 126 104 48 200 30 C296 48 372 126 372 222 V560" stroke="#f5e7c8" stroke-width="0.8" stroke-dasharray="4 4" stroke-opacity="0.6"/>
+          <!-- Floral Corner Accents -->
+          <circle cx="200" cy="20" r="5" fill="#d4af37"/>
+          <path d="M190 20 C190 12 210 12 210 20 Z" fill="#d4af37"/>
+        </svg>
+
+        <!-- Hanging Lanterns -->
+        <div class="hanging-lanterns">
+          <!-- Left Lantern -->
+          <svg class="lantern" viewBox="0 0 40 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <line x1="20" y1="0" x2="20" y2="40" stroke="#d4af37" stroke-width="1.2"/>
+            <polygon points="20,40 10,50 30,50" fill="#d4af37"/>
+            <rect x="11" y="50" width="18" height="25" rx="3" fill="#fcf6ba" stroke="#b38728" stroke-width="1.2"/>
+            <polygon points="11,75 20,86 29,75" fill="#d4af37"/>
+            <circle cx="20" cy="62" r="4" fill="#ffffff"/>
+          </svg>
+          <!-- Right Lantern -->
+          <svg class="lantern lantern-right" viewBox="0 0 40 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <line x1="20" y1="0" x2="20" y2="40" stroke="#d4af37" stroke-width="1.2"/>
+            <polygon points="20,40 10,50 30,50" fill="#d4af37"/>
+            <rect x="11" y="50" width="18" height="25" rx="3" fill="#fcf6ba" stroke="#b38728" stroke-width="1.2"/>
+            <polygon points="11,75 20,86 29,75" fill="#d4af37"/>
+            <circle cx="20" cy="62" r="4" fill="#ffffff"/>
+          </svg>
+        </div>
+
+        <div class="cover-header-text">
+          <div class="cover-bismillah">بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</div>
+          <div class="cover-subtitle">Welcome to the Aqdi Ceremony of</div>
+          <div class="cover-couple">Sevuri & Rahma</div>
+        </div>
+
+        <!-- Majestic Mughal Palace / Mosque Courtyard with Couple -->
+        <div class="scenery-stage">
+          <!-- Taj Mahal / Islamic Grand Mosque Palace SVG Scenery -->
+          <svg class="palace-scenery-svg" viewBox="0 0 400 290" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#2a3d31" stop-opacity="0.9"/>
+                <stop offset="60%" stop-color="#e2d6c1" stop-opacity="0.85"/>
+                <stop offset="100%" stop-color="#fdfbf7"/>
+              </linearGradient>
+              <linearGradient id="palaceGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#ffffff"/>
+                <stop offset="100%" stop-color="#e7decf"/>
+              </linearGradient>
+            </defs>
+            <rect width="400" height="290" fill="url(#skyGrad)"/>
+            
+            <!-- Central Mughal Mosque Dome (Taj Mahal silhouette) -->
+            <path d="M200 45 C180 85 160 110 160 145 H240 C240 110 220 85 200 45 Z" fill="url(#palaceGrad)" stroke="#c5b69f" stroke-width="1"/>
+            <line x1="200" y1="35" x2="200" y2="45" stroke="#d4af37" stroke-width="2"/>
+            <circle cx="200" cy="33" r="3" fill="#d4af37"/>
+
+            <!-- Side Domes -->
+            <path d="M135 90 C125 115 115 130 115 155 H155 C155 130 145 115 135 90 Z" fill="url(#palaceGrad)" stroke="#c5b69f" stroke-width="0.8"/>
+            <path d="M265 90 C255 115 245 130 245 155 H285 C285 130 275 115 265 90 Z" fill="url(#palaceGrad)" stroke="#c5b69f" stroke-width="0.8"/>
+
+            <!-- Minarets Left & Right -->
+            <rect x="45" y="60" width="14" height="150" fill="url(#palaceGrad)" stroke="#c5b69f" stroke-width="0.8"/>
+            <path d="M52 42 L42 60 H62 Z" fill="#d4af37"/>
+            <rect x="341" y="60" width="14" height="150" fill="url(#palaceGrad)" stroke="#c5b69f" stroke-width="0.8"/>
+            <path d="M348 42 L338 60 H358 Z" fill="#d4af37"/>
+
+            <!-- Mosque Arch Colonnade & Balustrade -->
+            <rect x="70" y="145" width="260" height="75" fill="url(#palaceGrad)" stroke="#c5b69f" stroke-width="1"/>
+            <path d="M180 220 V175 C180 165 200 155 200 155 C200 155 220 165 220 175 V220 Z" fill="#2d3d32"/>
+            <path d="M140 220 V185 C140 178 155 170 155 170 C155 170 170 178 170 185 V220 Z" fill="#465a4c"/>
+            <path d="M230 220 V185 C230 178 245 170 245 170 C245 170 260 178 260 185 V220 Z" fill="#465a4c"/>
+
+            <!-- Reflective Marble Courtyard & Water Pool -->
+            <polygon points="0,220 400,220 400,290 0,290" fill="#fdfbf7"/>
+            <polygon points="120,220 280,220 310,290 90,290" fill="#e9e2d3" opacity="0.65"/>
+            <line x1="200" y1="220" x2="200" y2="290" stroke="#d4af37" stroke-width="1.5" stroke-dasharray="6 4"/>
+          </svg>
+
+          <!-- Back-facing Illustrated Couple in Arabic Wedding Attire (Matching Image 2) -->
+          <svg class="couple-illustration" viewBox="0 0 220 280" xmlns="http://www.w3.org/2000/svg">
+            <!-- Groom (Right): Cream Dishdasha / Thobe, Embroidered Bisht Edge, Omani Keffiyeh / Turban with Tassel, Silver Khanjar -->
+            <g id="groom">
+              <!-- Body / Dishdasha -->
+              <path d="M125 110 Q145 100 168 110 Q188 125 185 270 H118 Q115 190 125 110 Z" fill="#f7f5ed" stroke="#e0d6c4" stroke-width="1.2"/>
+              <!-- Bisht Fold & Gold Trim -->
+              <path d="M132 120 L135 270" stroke="#d4af37" stroke-width="2.5"/>
+              <path d="M165 125 Q180 180 183 270" fill="none" stroke="#dcd2be" stroke-width="1"/>
+              <!-- Omani Embroidered Cap / Keffiyeh (Back View) -->
+              <ellipse cx="148" cy="78" rx="20" ry="17" fill="#ede5d3" stroke="#cbbfa9" stroke-width="1.2"/>
+              <path d="M130 80 Q148 72 166 80" stroke="#8c6a2d" stroke-width="1.5" fill="none"/>
+              <path d="M132 84 Q148 76 164 84" stroke="#8c6a2d" stroke-width="1" stroke-dasharray="2 2" fill="none"/>
+              <!-- Groom Neck / Head -->
+              <ellipse cx="148" cy="85" rx="14" ry="12" fill="#d9ad88"/>
+              <!-- Hair / Beard Back View -->
+              <path d="M135 83 Q148 95 161 83" fill="#2a1f18"/>
+            </g>
+
+            <!-- Bride (Left): Majestic Emerald Green Islamic Bridal Gown & Long Flowing Veil with Intricate Gold Arabesque Embroidery (From Image 2) -->
+            <g id="bride">
+              <!-- Long Veil / Hijab falling gracefully -->
+              <path d="M40 270 Q48 135 78 85 Q92 65 108 85 Q128 125 124 270 Z" fill="#2d4a38" stroke="#1d3326" stroke-width="1.2"/>
+              <!-- Intricate Gold Floral Embroidery borders along veil -->
+              <path d="M42 270 Q50 140 80 88" fill="none" stroke="#d4af37" stroke-width="2.5"/>
+              <path d="M122 270 Q126 130 106 88" fill="none" stroke="#d4af37" stroke-width="2.5"/>
+              <!-- Bridal Head / Hijab (Back view) -->
+              <ellipse cx="93" cy="80" rx="18" ry="20" fill="#2d4a38"/>
+              <!-- Golden Bridal Tiara / Crown Accent on Hijab -->
+              <path d="M83 72 Q93 64 103 72" fill="none" stroke="#fcf6ba" stroke-width="3"/>
+              <!-- Gold Zari Motifs on Back of Dress -->
+              <path d="M85 130 Q93 120 101 130 Q93 140 85 130 Z" fill="#d4af37"/>
+              <path d="M80 160 Q93 145 106 160 Q93 175 80 160 Z" fill="#d4af37"/>
+              <path d="M75 195 Q93 180 111 195 Q93 210 75 195 Z" fill="#d4af37"/>
+              <!-- Elegant White Floral Bouquet Accent held between couple -->
+              <circle cx="120" cy="180" r="10" fill="#ffffff" opacity="0.95"/>
+              <circle cx="114" cy="176" r="6" fill="#fdfbf7"/>
+              <circle cx="126" cy="176" r="6" fill="#fdfbf7"/>
+            </g>
+          </svg>
+        </div>
+
+        <div class="scroll-down-cta">
+          Scroll Down
+          <span>↓</span>
+        </div>
+      </div>
+
+      <!-- ================= SECTION 2: SCRATCH TO REVEAL DATE ================= -->
+      <div class="scratch-section">
+        <div class="section-heading-serif">✦ The Date ✦</div>
+        <div class="section-subtext">Scratch below to reveal the auspicious dates</div>
+
+        <div class="scratch-cards-row">
+          <!-- Box 1: Singo -->
+          <div class="scratch-card-box">
+            <div class="scratch-inner-value">
+              <span class="scratch-val-num">16</span>
+              <span class="scratch-val-label">Oct 2026</span>
+              <span style="font-size: 8px; color: #88263e; font-weight: 700; margin-top: 2px;">SINGO</span>
+            </div>
+            <canvas class="scratch-canvas" id="canvas1" width="96" height="96"></canvas>
+          </div>
+
+          <!-- Box 2: Month -->
+          <div class="scratch-card-box">
+            <div class="scratch-inner-value">
+              <span class="scratch-val-num" style="font-size: 21px;">OCT</span>
+              <span class="scratch-val-label">2026</span>
+              <span style="font-size: 8px; color: #888; margin-top: 2px;">FRIDAYS</span>
+            </div>
+            <canvas class="scratch-canvas" id="canvas2" width="96" height="96"></canvas>
+          </div>
+
+          <!-- Box 3: Aqdi -->
+          <div class="scratch-card-box">
+            <div class="scratch-inner-value">
+              <span class="scratch-val-num">23</span>
+              <span class="scratch-val-label">Oct 2026</span>
+              <span style="font-size: 8px; color: var(--gold-dark); font-weight: 700; margin-top: 2px;">AQDI</span>
+            </div>
+            <canvas class="scratch-canvas" id="canvas3" width="96" height="96"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= SECTION 3: FORMAL AQDI NIKKAH CARD ================= -->
+      <div class="arched-niche-invitation">
+        <div class="niche-inner-border"></div>
+        <div class="niche-sub-intro">You are cordially invited to the</div>
+        <div class="niche-main-ceremony">AQDI CEREMONY OF</div>
+
+        <div class="niche-groom">Sevuri T. Msangi</div>
+        <div class="niche-parentage">Son of Mr. & Mrs. Msangi</div>
+
+        <div class="niche-with-sym">with</div>
+
+        <div class="niche-bride">Rahma Riyadh Kisuo</div>
+        <div class="niche-parentage">Daughter of Mr. & Mrs. Riyadh Kisuo</div>
+
+        <p class="niche-message">
+          "Dear Friends and Family, join us for an evening of love, faith & unforgettable memories as we celebrate the sacred bond of marriage and begin our forever."
+        </p>
+
+        <!-- Quranic Verse as in Reference Video -->
+        <div class="quran-ayah-block">
+          <div class="quran-arabic-text">وَخَلَقْنَاكُمْ أَزْوَاجًا</div>
+          <div class="quran-trans">"And We created you in pairs"</div>
+          <div class="quran-surah-ref">— Surah An-Naba [78:8] —</div>
+        </div>
+      </div>
+
+      <!-- ================= SECTION 4: PRE-WEDDING SINGO (USIKU WA ZAWADI) ================= -->
+      <div class="singo-event-container">
+        <!-- Floral corner bouquet illustration matching Image 1 -->
+        <svg class="singo-floral-accent" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="30" cy="30" r="22" fill="#d92062" opacity="0.8"/>
+          <circle cx="50" cy="20" r="16" fill="#f37023" opacity="0.85"/>
+          <circle cx="20" cy="50" r="15" fill="#f8a51d" opacity="0.9"/>
+          <circle cx="35" cy="35" r="10" fill="#fff" opacity="0.3"/>
+          <path d="M10 80 Q40 40 80 10" stroke="#3b6e44" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+
+        <span class="singo-tag">Pre-Wedding Celebration</span>
+        <div class="singo-title">SINGO: USIKU WA ZAWADI</div>
+        <div class="singo-sub-heading">Rahma Riyadh Kisuo</div>
+
+        <p class="singo-swahili-text">
+          Kwa furaha na moyo wa shukrani, ninawaalika kusherehekea pamoja nami katika usiku maalum wa upendo, zawadi na baraka tunapojiandaa kwa safari ya maisha ya ndoa.
+        </p>
+
+        <div class="event-info-line">
+          <svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10z"/></svg>
+          <div><strong>Ijumaa, 16 Oktoba 2026</strong></div>
+        </div>
+        <div class="event-info-line">
+          <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+          <div><strong>Saa 9:30 / 10:00 Alasiri</strong> (4:00 PM)</div>
+        </div>
+        <div class="event-info-line">
+          <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+          <div><strong>St Laurent Kawe</strong>, Kawe Round-About, Dar es Salaam</div>
+        </div>
+
+        <div class="dress-code-singo">
+          <strong>DRESS CODE:</strong> SARE YETU PAMBE<br>
+          <span style="font-size: 10px; color: #777;">Usiku wa zawadi na usiku wa kusherehekea • Uwepo wako ni zawadi kubwa kwangu</span>
+        </div>
+      </div>
+
+      <!-- ================= SECTION 5: WEDDING TIMELINE ================= -->
+      <div class="timeline-section">
+        <div class="section-heading-serif">✦ Wedding Timeline ✦</div>
+        <div class="section-subtext">The sequence of auspicious ceremonies</div>
+
+        <div class="timeline-container">
+          <div class="timeline-line"></div>
+
+          <!-- Step 1: Guest Arrival -->
+          <div class="timeline-step">
+            <div class="timeline-icon-arch">
+              <!-- Gate / Entrance Icon -->
+              <svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-7 14c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"/></svg>
+            </div>
+            <div class="timeline-content-box">
+              <div class="timeline-time">4:00 PM / 10:00 Alasiri</div>
+              <div class="timeline-desc">Guest Arrival & Welcome Refreshments</div>
+            </div>
+          </div>
+
+          <!-- Step 2: Bride & Groom Entrance -->
+          <div class="timeline-step">
+            <div class="timeline-icon-arch">
+              <!-- Arch / Crown Icon -->
+              <svg viewBox="0 0 24 24"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .55-.45 1-1 1H6c-.55 0-1-.45-1-1s.45-1 1-1h12c.55 0 1 .45 1 1z"/></svg>
+            </div>
+            <div class="timeline-content-box">
+              <div class="timeline-time">5:30 PM</div>
+              <div class="timeline-desc">Grand Bridal Entrance</div>
+            </div>
+          </div>
+
+          <!-- Step 3: Prayers -->
+          <div class="timeline-step">
+            <div class="timeline-icon-arch">
+              <!-- Mosque / Dua Icon -->
+              <svg viewBox="0 0 24 24"><path d="M12 2C9.5 5 8 7.5 8 10c0 2.2 1.8 4 4 4s4-1.8 4-4c0-2.5-1.5-5-4-8zm-6 18h12v-2c0-2.2-3.6-3.5-6-3.5s-6 1.3-6 3.5v2z"/></svg>
+            </div>
+            <div class="timeline-content-box">
+              <div class="timeline-time">6:45 PM</div>
+              <div class="timeline-desc">Salat al-Maghrib & Duas</div>
+            </div>
+          </div>
+
+          <!-- Step 4: Aqdi Ceremony -->
+          <div class="timeline-step">
+            <div class="timeline-icon-arch">
+              <!-- Rings / Marriage Knot Icon -->
+              <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/></svg>
+            </div>
+            <div class="timeline-content-box">
+              <div class="timeline-time">7:30 PM</div>
+              <div class="timeline-desc">Solemnization of Aqdi & Exchange of Vows</div>
+            </div>
+          </div>
+
+          <!-- Step 5: Banquet Dinner -->
+          <div class="timeline-step">
+            <div class="timeline-icon-arch">
+              <!-- Dinner / Celebration Icon -->
+              <svg viewBox="0 0 24 24"><path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/></svg>
+            </div>
+            <div class="timeline-content-box">
+              <div class="timeline-time">8:30 PM</div>
+              <div class="timeline-desc">Royal Banquet Dinner & Celebrations</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= SECTION 6: COUNTDOWN TIMER ================= -->
+      <div class="countdown-box-section">
+        <div class="countdown-title-text">The Celebration Begins In</div>
+        <div class="countdown-grid">
+          <div class="countdown-col">
+            <span class="countdown-num" id="days">00</span>
+            <span class="countdown-lbl">Days</span>
+          </div>
+          <div class="countdown-col">
+            <span class="countdown-num" id="hours">00</span>
+            <span class="countdown-lbl">Hours</span>
+          </div>
+          <div class="countdown-col">
+            <span class="countdown-num" id="minutes">00</span>
+            <span class="countdown-lbl">Minutes</span>
+          </div>
+          <div class="countdown-col">
+            <span class="countdown-num" id="seconds">00</span>
+            <span class="countdown-lbl">Seconds</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= SECTION 7: VENUE SPOTLIGHT AT END ================= -->
+      <div class="venue-spotlight-section">
+        <div class="venue-city-title">Venue & Location</div>
+        <div class="venue-name-serif">Dar es Salaam Serena Hotel</div>
+        <div class="venue-hall-desc">Kivukoni Front, Dar es Salaam, Tanzania</div>
+
+        <!-- Luxury Hotel Facade / Beachfront Garden Palace Illustration as in Video -->
+        <div class="venue-image-frame">
+          <svg class="venue-illustration-art" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="hotelSky" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#1e2e24"/>
+                <stop offset="70%" stop-color="#d9caa8"/>
+                <stop offset="100%" stop-color="#fdfbf7"/>
+              </linearGradient>
+            </defs>
+            <rect width="400" height="200" fill="url(#hotelSky)"/>
+            <!-- Palm Trees on Left and Right -->
+            <path d="M30 200 Q40 120 45 70" stroke="#4a3b2c" stroke-width="4"/>
+            <path d="M45 70 Q20 50 5 65 M45 70 Q35 40 25 35 M45 70 Q60 40 75 45 M45 70 Q70 60 85 75" stroke="#25412b" stroke-width="2.5" fill="none"/>
+
+            <path d="M370 200 Q360 120 355 70" stroke="#4a3b2c" stroke-width="4"/>
+            <path d="M355 70 Q380 50 395 65 M355 70 Q365 40 375 35 M355 70 Q340 40 325 45 M355 70 Q330 60 315 75" stroke="#25412b" stroke-width="2.5" fill="none"/>
+
+            <!-- Grand Colonial / Swahili Serena Hotel Facade -->
+            <rect x="70" y="80" width="260" height="90" fill="#fcfaf4" stroke="#c5b69f" stroke-width="1"/>
+            <!-- Hotel Roof & Terra Cotta Overhangs -->
+            <polygon points="60,80 340,80 320,60 80,60" fill="#a45037"/>
+            <polygon points="150,60 250,60 200,35" fill="#a45037"/>
+
+            <!-- Hotel Arched Windows and Verandas -->
+            <g fill="#2d3f32">
+              <path d="M90 120 V100 C90 95 105 95 105 100 V120 Z"/>
+              <path d="M125 120 V100 C125 95 140 95 140 100 V120 Z"/>
+              <path d="M185 120 V95 C185 88 215 88 215 95 V120 Z"/>
+              <path d="M260 120 V100 C260 95 275 95 275 100 V120 Z"/>
+              <path d="M295 120 V100 C295 95 310 95 310 100 V120 Z"/>
+            </g>
+
+            <!-- Reflective Water / Fountain Pool in foreground -->
+            <ellipse cx="200" cy="180" rx="90" ry="16" fill="#cad5cb" stroke="#b2c2b3" stroke-width="1.5"/>
+            <circle cx="200" cy="178" r="4" fill="#ffffff"/>
+          </svg>
+        </div>
+
+        <!-- Dress Code Arabic Theme Palette -->
+        <div class="dress-code-palette">
+          <div class="palette-title">Dress Code: Arabic Style Palette</div>
+          <div class="swatch-row">
+            <div class="swatch-circle" style="background: #2d4536;" title="Deep Emerald Green"></div>
+            <div class="swatch-circle" style="background: #7a543f;" title="Oud Warm Brown"></div>
+            <div class="swatch-circle" style="background: #b8987b;" title="Camel Sand"></div>
+            <div class="swatch-circle" style="background: #d6b885;" title="Desert Gold"></div>
+            <div class="swatch-circle" style="background: #f2e7d3;" title="Silk Cream"></div>
+          </div>
+        </div>
+
+        <a href="https://maps.google.com/?q=Dar+es+Salaam+Serena+Hotel" target="_blank" class="btn-map-action">
+          <svg style="width: 16px; height: 16px; fill: #fff;" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+          Open Serena Hotel on Maps
+        </a>
+      </div>
+
+      <!-- FOOTER -->
+      <div class="invitation-footer">
+        <div class="footer-signature">Sevuri & Rahma</div>
+        <p>In the presence of Allah, with love, faith & duas, we begin our forever.</p>
+        <p style="margin-top: 10px; font-size: 10px; color: #aaa;">#SevuriWedsRahma • Dar es Salaam</p>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // 1. Envelope Opening & Audio
+    const waxSeal = document.getElementById('waxSeal');
+    const envelopeWrapper = document.getElementById('envelopeWrapper');
+    const bgMusic = document.getElementById('bgMusic');
+    const audioBtn = document.getElementById('audioBtn');
+    let isPlaying = false;
+
+    waxSeal.addEventListener('click', () => {
+      envelopeWrapper.classList.add('unfolding');
+      bgMusic.play().then(() => {
+        isPlaying = true;
+      }).catch(err => console.log('Audio autoplay prevented:', err));
+
+      setTimeout(() => {
+        envelopeWrapper.classList.add('opened');
+      }, 950);
+    });
+
+    audioBtn.addEventListener('click', () => {
+      if (isPlaying) {
+        bgMusic.pause();
+        isPlaying = false;
+        audioBtn.style.opacity = '0.5';
+      } else {
+        bgMusic.play();
+        isPlaying = true;
+        audioBtn.style.opacity = '1';
+      }
+    });
+
+    // 2. Realistic Canvas Scratch-to-Reveal Card (Day, Month, Year)
+    function initScratcher(canvasId) {
+      const canvas = document.getElementById(canvasId);
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width;
+      const h = canvas.height;
+
+      // Realistic Gold Leaf Shimmer Texture
+      const grad = ctx.createLinearGradient(0, 0, w, h);
+      grad.addColorStop(0, '#e5d3aa');
+      grad.addColorStop(0.3, '#fbf4e2');
+      grad.addColorStop(0.6, '#caa767');
+      grad.addColorStop(1, '#dfca9b');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, w, h);
+
+      // Gold Sparkle Accents
+      ctx.fillStyle = '#8b6f38';
+      ctx.font = '700 10.5px Montserrat';
+      ctx.textAlign = 'center';
+      ctx.fillText('SCRATCH', w / 2, h / 2 - 2);
+      ctx.font = '500 8px Montserrat';
+      ctx.fillText('HERE', w / 2, h / 2 + 11);
+
+      let scratching = false;
+
+      function scratchAt(e) {
+        if (!scratching) return;
+        const rect = canvas.getBoundingClientRect();
+        const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+        const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+        const x = clientX - rect.left;
+        const y = clientY - rect.top;
+
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.beginPath();
+        ctx.arc(x, y, 16, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      canvas.addEventListener('mousedown', (e) => { scratching = true; scratchAt(e); });
+      canvas.addEventListener('mousemove', scratchAt);
+      window.addEventListener('mouseup', () => { scratching = false; });
+
+      canvas.addEventListener('touchstart', (e) => { scratching = true; scratchAt(e); }, { passive: false });
+      canvas.addEventListener('touchmove', (e) => { e.preventDefault(); scratchAt(e); }, { passive: false });
+      window.addEventListener('touchend', () => { scratching = false; });
+    }
+
+    initScratcher('canvas1');
+    initScratcher('canvas2');
+    initScratcher('canvas3');
+
+    // 3. Live Countdown Timer to Singo / Aqdi (16th Oct 2026, 16:00 EAT)
+    const targetTimestamp = new Date('2026-10-16T16:00:00+03:00').getTime();
+
+    function refreshTimer() {
+      const now = new Date().getTime();
+      const diff = targetTimestamp - now;
+
+      if (diff <= 0) {
+        document.getElementById('days').innerText = "00";
+        document.getElementById('hours').innerText = "00";
+        document.getElementById('minutes').innerText = "00";
+        document.getElementById('seconds').innerText = "00";
+        return;
+      }
+
+      const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const s = Math.floor((diff % (1000 * 60)) / 1000);
+
+      document.getElementById('days').innerText = String(d).padStart(2, '0');
+      document.getElementById('hours').innerText = String(h).padStart(2, '0');
+      document.getElementById('minutes').innerText = String(m).padStart(2, '0');
+      document.getElementById('seconds').innerText = String(s).padStart(2, '0');
+    }
+
+    setInterval(refreshTimer, 1000);
+    refreshTimer();
+  </script>
+</body>
+</html>
