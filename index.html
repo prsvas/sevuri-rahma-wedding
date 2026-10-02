@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Aqdi & Singo | Sevuri & Rahma</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800&family=Great+Vibes&family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Amiri:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #c5a059;
+    --gold-light: #e8d399;
+    --gold-dark: #8c6b2d;
+    --sage-dark: #2d4536;
+    --sage-med: #47624f;
+    --sage-light: #94a395;
+    --cream: #faf7f2;
+    --paper: #fefdfa;
+    --text-dark: #2a2c2b;
+    --shadow-soft: 0 15px 35px rgba(0,0,0,0.12);
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    background: #141915;
+    background: radial-gradient(circle at 50% 30%, #202b23 0%, #0d120f 100%);
+    font-family: 'Montserrat', sans-serif;
+    color: var(--text-dark);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 10px;
+    overflow-x: hidden;
+  }
+
+  /* Audio player button */
+  .audio-toggle {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 999;
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+    transition: transform 0.2s, background 0.3s;
+  }
+  .audio-toggle:active { transform: scale(0.92); }
+  .audio-toggle svg { width: 22px; height: 22px; fill: var(--gold-dark); }
+
+  /* Main Device / Mobile Wrapper */
+  .app-container {
+    width: 100%;
+    max-width: 430px;
+    min-height: 90vh;
+    position: relative;
+    perspective: 1200px;
+    perspective-origin: center top;
+  }
+
+  /* ================= ENVELOPE STYLES ================= */
+  .envelope-wrapper {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    max-width: 420px;
+    height: 92vh;
+    max-height: 800px;
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1), visibility 1s;
+  }
+
+  .envelope-wrapper.opened {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .envelope-card {
+    position: relative;
+    width: 90%;
+    height: 90%;
+    background: #fdfbf7;
+    border-radius: 12px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.5), inset 0 0 100px rgba(197, 160, 89, 0.08);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e7ded0;
+  }
+
+  /* Embossed Damask / Floral background in envelope */
+  .embossed-bg {
+    position: absolute;
+    inset: 0;
+    background-image: 
+      radial-gradient(#b89e6e 0.75px, transparent 0.75px),
+      radial-gradient(#b89e6e 0.75px, #fdfbf7 0.75px);
+    background-size: 24px 24px;
+    background-position: 0 0, 12px 12px;
+    opacity: 0.25;
+  }
+
+  .envelope-flap-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 48%;
+    background: linear-gradient(175deg, #f7f3eb 0%, #efe7d7 100%);
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    transform-origin: top center;
+    transition: transform 1.2s cubic-bezier(0.65, 0, 0.35, 1);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    z-index: 5;
+    border-bottom: 1px solid rgba(197, 160, 89, 0.2);
+  }
+
+  .envelope-flap-bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 55%;
+    background: linear-gradient(355deg, #f3ede2 0%, #faf6ee 100%);
+    clip-path: polygon(0 100%, 100% 100%, 50% 0);
+    z-index: 4;
+    border-top: 1px solid rgba(197, 160, 89, 0.15);
+  }
+
+  .envelope-wrapper.unfolding .envelope-flap-top {
+    transform: rotateX(175deg);
+    z-index: 1;
+  }
+
+  /* Wax Seal */
+  .wax-seal {
+    position: absolute;
+    top: 48%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(1);
+    width: 86px;
+    height: 86px;
+    background: radial-gradient(circle at 35% 35%, #fffef8 0%, #ece5d6 60%, #cebe9e 100%);
+    border-radius: 50%;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.22), inset 0 2px 5px rgba(255,255,255,0.9), inset 0 -3px 6px rgba(140, 107, 45, 0.35);
+    z-index: 10;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s;
+    animation: gentlePulse 2.4s infinite ease-in-out;
+  }
+  .wax-seal:hover {
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+  .wax-seal-inner {
+    width: 68px;
+    height: 68px;
+    border: 1.5px dashed var(--gold);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--gold-dark);
+  }
+  .wax-monogram {
+    font-family: 'Great Vibes', cursive;
+    font-size: 30px;
+    line-height: 1;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 1px rgba(255,255,255,0.8);
+  }
+
+  @keyframes gentlePulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 10px 25px rgba(0,0,0,0.22); }
+    50% { transform: translate(-50%, -50%) scale(1.05); box-shadow: 0 15px 35px rgba(197, 160, 89, 0.35); }
+  }
+
+  .tap-hint {
+    position: absolute;
+    bottom: 16%;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+    font-weight: 600;
+    animation: fadeInOut 2s infinite;
+    z-index: 6;
+  }
+  @keyframes fadeInOut { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+
+  /* ================= INVITATION CONTENT ================= */
+  .invitation-card {
+    width: 100%;
+    background: var(--paper);
+    border-radius: 20px;
+    box-shadow: var(--shadow-soft);
+    overflow: hidden;
+    border: 1px solid rgba(197, 160, 89, 0.3);
+    margin-bottom: 40px;
+    animation: fadeInCard 1.2s ease forwards;
+  }
+  @keyframes fadeInCard {
+    from { opacity: 0; transform: translateY(30px) scale(0.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* Header Arch / Cover */
+  .card-hero {
+    position: relative;
+    background: linear-gradient(180deg, #1b281f 0%, #293d30 70%, #fefdfa 100%);
+    padding: 40px 20px 25px;
+    text-align: center;
+    color: #fff;
+    overflow: hidden;
+  }
+  .card-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at top center, rgba(232, 211, 153, 0.25) 0%, transparent 70%);
+  }
+
+  .bismillah {
+    font-family: 'Amiri', serif;
+    font-size: 24px;
+    color: var(--gold-light);
+    margin-bottom: 12px;
+    letter-spacing: 1px;
+  }
+
+  .sub-title-intro {
+    font-family: 'Cinzel', serif;
+    font-size: 10.5px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #d8dfd9;
+    margin-bottom: 8px;
+  }
+
+  .event-main-title {
+    font-family: 'Cinzel', serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--gold-light);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .hero-couple-names {
+    margin: 22px 0 16px;
+  }
+  .name-groom {
+    font-family: 'Great Vibes', cursive;
+    font-size: 38px;
+    color: #ffffff;
+    line-height: 1.1;
+  }
+  .and-symbol {
+    font-family: 'Cinzel', serif;
+    font-size: 16px;
+    color: var(--gold);
+    display: block;
+    margin: 2px 0;
+  }
+  .name-bride {
+    font-family: 'Great Vibes', cursive;
+    font-size: 38px;
+    color: #ffffff;
+    line-height: 1.1;
+  }
+
+  .scroll-down-hint {
+    font-size: 10px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+    margin-top: 25px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .scroll-down-hint span {
+    animation: bounceDown 1.5s infinite;
+    display: inline-block;
+  }
+  @keyframes bounceDown { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
+
+  /* SECTION CARDS */
+  .section-block {
+    padding: 30px 22px;
+    text-align: center;
+    position: relative;
+  }
+  .section-divider {
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 18px auto;
+  }
+
+  /* Interactive Scratch-off Card */
+  .scratch-section {
+    background: linear-gradient(180deg, #fdfbf7 0%, #f6f1e8 100%);
+    border-radius: 18px;
+    margin: 0 18px 24px;
+    padding: 24px 16px;
+    border: 1px solid rgba(197, 160, 89, 0.25);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.04);
+  }
+  .scratch-title {
+    font-family: 'Cinzel', serif;
+    font-size: 15px;
+    letter-spacing: 2px;
+    color: var(--gold-dark);
+    margin-bottom: 6px;
+    font-weight: 700;
+  }
+  .scratch-sub {
+    font-size: 11px;
+    color: #7a7a7a;
+    margin-bottom: 18px;
+  }
+
+  .scratch-grid {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .scratch-box {
+    position: relative;
+    width: 96px;
+    height: 96px;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e2d9c8;
+    user-select: none;
+  }
+  .scratch-box-revealed-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .scratch-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--sage-dark);
+  }
+  .scratch-label {
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+    margin-top: 2px;
+    font-weight: 600;
+  }
+  .scratch-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    cursor: grab;
+    z-index: 2;
+    touch-action: none;
+  }
+
+  /* Quranic / Faith Verse */
+  .verse-box {
+    padding: 10px 20px;
+    font-style: italic;
+    color: #555;
+    font-size: 12.5px;
+    line-height: 1.7;
+    position: relative;
+  }
+  .verse-arabic {
+    font-family: 'Amiri', serif;
+    font-size: 20px;
+    color: var(--sage-dark);
+    margin-bottom: 8px;
+    font-style: normal;
+  }
+
+  /* Details & Events Styling */
+  .event-card {
+    background: #ffffff;
+    border: 1px solid #e8e2d5;
+    border-radius: 16px;
+    padding: 22px 18px;
+    margin: 16px 18px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+  }
+  .event-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--gold);
+  }
+  .event-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    background: #2d4536;
+    color: #fff;
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+  .event-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 19px;
+    color: var(--sage-dark);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .event-subtitle {
+    font-size: 12px;
+    color: var(--gold-dark);
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+  .event-detail-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 8px;
+    font-size: 12px;
+    color: #444;
+  }
+  .event-detail-item svg {
+    width: 16px;
+    height: 16px;
+    fill: var(--gold-dark);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .event-dresscode {
+    margin-top: 14px;
+    padding-top: 10px;
+    border-top: 1px dashed #e8e2d5;
+    font-size: 11px;
+    color: #555;
+  }
+  .palette-dots {
+    display: flex;
+    gap: 7px;
+    margin-top: 6px;
+  }
+  .dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.15);
+  }
+
+  /* Countdown Clock */
+  .countdown-section {
+    background: linear-gradient(135deg, #24352a 0%, #17241c 100%);
+    color: #fff;
+    border-radius: 18px;
+    margin: 18px;
+    padding: 26px 18px;
+    text-align: center;
+  }
+  .countdown-title {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    margin-bottom: 18px;
+  }
+  .timer-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  .timer-unit {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(232, 211, 153, 0.25);
+    border-radius: 10px;
+    padding: 10px 4px;
+  }
+  .timer-val {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #ffffff;
+    display: block;
+  }
+  .timer-label {
+    font-size: 8.5px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    margin-top: 4px;
+    display: block;
+  }
+
+  /* Action Buttons / Map */
+  .btn-map {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border: 1px solid var(--gold);
+    color: var(--gold-dark);
+    background: transparent;
+    border-radius: 25px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-decoration: none;
+    margin-top: 10px;
+    transition: all 0.3s;
+  }
+  .btn-map:hover {
+    background: var(--gold);
+    color: #fff;
+  }
+
+  /* Footer */
+  .footer-closing {
+    text-align: center;
+    padding: 30px 20px 40px;
+    font-size: 11.5px;
+    color: #777;
+  }
+  .footer-names {
+    font-family: 'Great Vibes', cursive;
+    font-size: 26px;
+    color: var(--sage-dark);
+    margin-bottom: 6px;
+  }
+
+</style>
+</head>
+<body>
+
+  <!-- Audio Toggle -->
+  <div class="audio-toggle" id="audioBtn" title="Play / Pause Background Music">
+    <svg viewBox="0 0 24 24">
+      <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+    </svg>
+  </div>
+  <audio id="bgMusic" loop preload="none">
+    <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=soft-wedding-background-111756.mp3" type="audio/mp3">
+  </audio>
+
+  <div class="app-container">
+
+    <!-- 3D OPENING ENVELOPE -->
+    <div class="envelope-wrapper" id="envelopeWrapper">
+      <div class="envelope-card">
+        <div class="embossed-bg"></div>
+        <div class="envelope-flap-top"></div>
+        <div class="envelope-flap-bottom"></div>
+        
+        <!-- Wax Seal -->
+        <div class="wax-seal" id="waxSeal">
+          <div class="wax-seal-inner">
+            <div class="wax-monogram">S&R</div>
+          </div>
+        </div>
+
+        <div class="tap-hint">Tap seal to open invitation</div>
+      </div>
+    </div>
+
+    <!-- MAIN SCROLLABLE INVITATION -->
+    <div class="invitation-card" id="invitationContent">
+
+      <!-- Hero Header -->
+      <div class="card-hero">
+        <div class="bismillah">بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</div>
+        <div class="sub-title-intro">In the presence of Allah, with love, faith & duas</div>
+        <div class="event-main-title">AQDI & SINGO</div>
+        
+        <div class="hero-couple-names">
+          <div class="name-groom">Sevuri T. Msangi</div>
+          <span class="and-symbol">&</span>
+          <div class="name-bride">Rahma Riyadh Kisuo</div>
+        </div>
+
+        <div style="font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold-light);">
+          Dar es Salaam, Tanzania
+        </div>
+
+        <div class="scroll-down-hint">
+          Scroll Down
+          <span>↓</span>
+        </div>
+      </div>
+
+      <!-- Interactive Scratch-to-Reveal Date -->
+      <div class="section-block" style="padding-bottom: 10px;">
+        <div class="scratch-section">
+          <div class="scratch-title">✨ Scratch To Reveal Dates ✨</div>
+          <div class="scratch-sub">Swipe or drag across each card below</div>
+
+          <div class="scratch-grid">
+            <!-- Box 1: Singo -->
+            <div class="scratch-box">
+              <div class="scratch-box-revealed-content">
+                <span class="scratch-num">16</span>
+                <span class="scratch-label">Oct 2026</span>
+                <span style="font-size: 8px; color: #888;">SINGO</span>
+              </div>
+              <canvas class="scratch-canvas" id="scratchCanvas1" width="96" height="96"></canvas>
+            </div>
+
+            <!-- Box 2: Month -->
+            <div class="scratch-box">
+              <div class="scratch-box-revealed-content">
+                <span class="scratch-num" style="font-size: 20px;">OCT</span>
+                <span class="scratch-label">2026</span>
+                <span style="font-size: 8px; color: #888;">FRIDAYS</span>
+              </div>
+              <canvas class="scratch-canvas" id="scratchCanvas2" width="96" height="96"></canvas>
+            </div>
+
+            <!-- Box 3: Aqdi -->
+            <div class="scratch-box">
+              <div class="scratch-box-revealed-content">
+                <span class="scratch-num">23</span>
+                <span class="scratch-label">Oct 2026</span>
+                <span style="font-size: 8px; color: #888;">AQDI</span>
+              </div>
+              <canvas class="scratch-canvas" id="scratchCanvas3" width="96" height="96"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Blessings & Holy Quote -->
+      <div class="verse-box" style="text-align: center;">
+        <div class="verse-arabic">وَمِنْ ءَايَٰتِهِۦٓ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَٰجًۭا لِّتَسْكُنُوٓا۟ إِلَيْهَا</div>
+        <p>"And among His signs is that He created for you mates from among yourselves that you may dwell in tranquility with them, and He has put love and mercy between your hearts."</p>
+        <p style="font-size: 10px; color: var(--gold-dark); margin-top: 5px; font-weight: 600;">[Surah Ar-Rum: 21]</p>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <!-- EVENT 1: SINGO -->
+      <div class="event-card">
+        <span class="event-badge">Pre-Wedding Celebration</span>
+        <div class="event-title">Singo: Usiku Wa Zawadi</div>
+        <div class="event-subtitle">Anakualika katika Singo yake — Rahma Riyadh Kisuo</div>
+        
+        <p style="font-size: 12px; line-height: 1.6; color: #555; margin-bottom: 14px;">
+          Kwa furaha na moyo wa shukrani, ninawaalika kusherehekea pamoja nami katika usiku maalum wa upendo, zawadi na baraka tunapojiandaa kwa safari ya maisha ya ndoa.
+        </p>
+
+        <div class="event-detail-item">
+          <svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10z"/></svg>
+          <div><strong>Ijumaa, 16 Oktoba 2026</strong></div>
+        </div>
+        <div class="event-detail-item">
+          <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+          <div><strong>Saa 9:30 / 10:00 Alasiri</strong> (4:00 PM)</div>
+        </div>
+        <div class="event-detail-item">
+          <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+          <div><strong>St Laurent Kawe</strong>, Kawe Round-About, Dar es Salaam</div>
+        </div>
+
+        <div class="event-dresscode">
+          <strong>DRESS CODE:</strong> SARE YETU PAMBE<br>
+          <span style="font-size: 10.5px; color: #777;">Usiku wa zawadi na usiku wa kusherehekea • Uwepo wako ni zawadi kubwa kwangu</span>
+        </div>
+
+        <a href="https://maps.google.com/?q=St+Laurent+Kawe+Roundabout+Dar+es+Salaam" target="_blank" class="btn-map">
+          📍 Open Location in Maps
+        </a>
+      </div>
+
+      <!-- EVENT 2: AQDI CEREMONY -->
+      <div class="event-card">
+        <span class="event-badge" style="background: var(--gold-dark);">Nuptial Ceremony</span>
+        <div class="event-title">Aqdi Ceremony</div>
+        <div class="event-subtitle">Union of Sevuri T. Msangi & Rahma Riyadh Kisuo</div>
+
+        <div class="event-detail-item">
+          <svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10z"/></svg>
+          <div><strong>Friday, 23rd October 2026</strong></div>
+        </div>
+        <div class="event-detail-item">
+          <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+          <div><strong>10:00 Alasiri / 9:30 PM</strong></div>
+        </div>
+        <div class="event-detail-item">
+          <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+          <div><strong>Serena Hotel</strong>, Dar es Salaam</div>
+        </div>
+
+        <div class="event-dresscode">
+          <strong>DRESS CODE:</strong> Arabic Style featuring the palette below:
+          <div class="palette-dots">
+            <div class="dot" style="background: #47624f;" title="Dark Green"></div>
+            <div class="dot" style="background: #7a543f;" title="Warm Brown"></div>
+            <div class="dot" style="background: #b8987b;" title="Camel Sand"></div>
+            <div class="dot" style="background: #d6b885;" title="Desert Gold"></div>
+            <div class="dot" style="background: #f2e7d3;" title="Soft Cream"></div>
+          </div>
+        </div>
+
+        <a href="https://maps.google.com/?q=Dar+es+Salaam+Serena+Hotel" target="_blank" class="btn-map">
+          📍 Open Location in Maps
+        </a>
+      </div>
+
+      <!-- Live Countdown -->
+      <div class="countdown-section">
+        <div class="countdown-title">The Celebration Begins In</div>
+        <div class="timer-grid">
+          <div class="timer-unit">
+            <span class="timer-val" id="days">00</span>
+            <span class="timer-label">Days</span>
+          </div>
+          <div class="timer-unit">
+            <span class="timer-val" id="hours">00</span>
+            <span class="timer-label">Hours</span>
+          </div>
+          <div class="timer-unit">
+            <span class="timer-val" id="minutes">00</span>
+            <span class="timer-label">Mins</span>
+          </div>
+          <div class="timer-unit">
+            <span class="timer-val" id="seconds">00</span>
+            <span class="timer-label">Secs</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer-closing">
+        <div class="footer-names">Sevuri & Rahma</div>
+        <p>We look forward to celebrating this special milestone with you!</p>
+        <p style="margin-top: 10px; font-size: 10px; color: #aaa;">#SevuriWedsRahma</p>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // 1. Envelope opening animation
+    const waxSeal = document.getElementById('waxSeal');
+    const envelopeWrapper = document.getElementById('envelopeWrapper');
+    const bgMusic = document.getElementById('bgMusic');
+    const audioBtn = document.getElementById('audioBtn');
+    let musicPlaying = false;
+
+    waxSeal.addEventListener('click', () => {
+      envelopeWrapper.classList.add('unfolding');
+      // Play background audio on first gesture
+      bgMusic.play().then(() => {
+        musicPlaying = true;
+      }).catch(e => console.log('Audio autoplay prevented:', e));
+
+      setTimeout(() => {
+        envelopeWrapper.classList.add('opened');
+      }, 900);
+    });
+
+    // 2. Audio control
+    audioBtn.addEventListener('click', () => {
+      if (musicPlaying) {
+        bgMusic.pause();
+        musicPlaying = false;
+        audioBtn.style.opacity = '0.5';
+      } else {
+        bgMusic.play();
+        musicPlaying = true;
+        audioBtn.style.opacity = '1';
+      }
+    });
+
+    // 3. Scratch Card Effect (Canvas)
+    function setupScratchCard(canvasId) {
+      const canvas = document.getElementById(canvasId);
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width;
+      const h = canvas.height;
+
+      // Draw initial silver/gold textured cover
+      const grad = ctx.createLinearGradient(0, 0, w, h);
+      grad.addColorStop(0, '#e8dcbe');
+      grad.addColorStop(0.5, '#f4ece1');
+      grad.addColorStop(1, '#c5ab7b');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, w, h);
+
+      // Add shimmer text / dots
+      ctx.fillStyle = '#8a713f';
+      ctx.font = '600 11px Montserrat';
+      ctx.textAlign = 'center';
+      ctx.fillText('SCRATCH', w / 2, h / 2 - 2);
+      ctx.font = '500 8px Montserrat';
+      ctx.fillText('HERE', w / 2, h / 2 + 10);
+
+      let isDrawing = false;
+
+      function scratch(e) {
+        if (!isDrawing) return;
+        const rect = canvas.getBoundingClientRect();
+        const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+        const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+        const x = clientX - rect.left;
+        const y = clientY - rect.top;
+
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.beginPath();
+        ctx.arc(x, y, 16, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      canvas.addEventListener('mousedown', (e) => { isDrawing = true; scratch(e); });
+      canvas.addEventListener('mousemove', scratch);
+      window.addEventListener('mouseup', () => { isDrawing = false; });
+
+      canvas.addEventListener('touchstart', (e) => { isDrawing = true; scratch(e); }, { passive: false });
+      canvas.addEventListener('touchmove', (e) => { e.preventDefault(); scratch(e); }, { passive: false });
+      window.addEventListener('touchend', () => { isDrawing = false; });
+    }
+
+    setupScratchCard('scratchCanvas1');
+    setupScratchCard('scratchCanvas2');
+    setupScratchCard('scratchCanvas3');
+
+    // 4. Live Countdown to Singo (16th Oct 2026, 16:00:00 EAT)
+    const targetDate = new Date('2026-10-16T16:00:00+03:00').getTime();
+
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const diff = targetDate - now;
+
+      if (diff <= 0) {
+        document.getElementById('days').innerText = "00";
+        document.getElementById('hours').innerText = "00";
+        document.getElementById('minutes').innerText = "00";
+        document.getElementById('seconds').innerText = "00";
+        return;
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+      document.getElementById('days').innerText = String(days).padStart(2, '0');
+      document.getElementById('hours').innerText = String(hours).padStart(2, '0');
+      document.getElementById('minutes').innerText = String(mins).padStart(2, '0');
+      document.getElementById('seconds').innerText = String(secs).padStart(2, '0');
+    }
+
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+  </script>
+</body>
+</html>
